@@ -1,0 +1,17 @@
+__pycache__/*
+.DS_Store
+
+*.nc
+*.w2l
+*.opt
+*.wrn
+*.err
+*.dbg
+*.bln
+*.txt
+
+tsr_output/
+snp_output/
+
+
+
