@@ -1,33 +1,23 @@
 # CE-QUAL-W2 practical example for Shasta Reservoir
 This repository houses the executables and data required to run the CE-QUAL-W2 hydrodynamics model (version 4.5) for a Shasta Reservoir test case. This README file provides a high-level overview of the contents of the repository, setting up the CE-QUAL-W2 model, 
-running the model, and analyzing the output via raw output data and the W2 post-processor tool. This repository supports the conceptual discussion of the CE-QUAL-W2 model on the Waterprogramming Blog Post [here](https://waterprogramming.wpcomstaging.com/wp-admin/edit.php?post_type=post&author=247677274)
+running the model, and analyzing the output via raw output data and the W2 post-processor tool. This repository supports the conceptual discussion of the CE-QUAL-W2 model on the Waterprogramming Blog Post [here](https://waterprogramming.wpcomstaging.com/2025/10/16/ce-qual-w2-overview-and-application/). CE-QUAL-W2 will be referred to as 'W2' below for brevity.
 
-## Input data description
-The code below supports the data processing, model fitting, generation, and plotting routines to support the aforementioned manuscript.
-## Getting started
-1) temp_precip_data-process.R: Processes raw GEFS forecast and observed MAT/MAP data for model fitting (30 min)
-2) temp_precip_model-fit.R: Fits synthetic forecast model to meteorological data from step 1 (1 hour)
-3) temp_precip_synthetic-gen.R: Generates specified number of syn-GEFS samples to be input into HEFS (FEWS) (1 hour per 100 samples)
-4) temp_precip_fews_process.R: Arranges syn-GEFS samples to be processed by external CNRFC HEFS architecture
-5) ens-process_syn-gefs.R: Processes syn-GEFS .csv files from CNRFC to be R compatible for analysis
+## Brief input data description
+W2 requires at least one inflow and outflow file, at least one inflow temperature file, a meteorology file including at a minimum: (air temperature, dewpoint temperature, wind speed, wind direction, and cloud cover), and a bathymetry file. These files are pre-staged in this repository in the aptly named inflow, outflow, met, and bathymetry folders. All of these data are specified with Julian Day time delineation for compatibility with the W2 model. Inflow, outflow, and inflow temperature data come from gage data downloaded from the CA Data Exchange Center (CDEC). All the meteorological variables were derived from ERA5 reanalysis and averaged over the Shasta lake geographical area. The bathymetry file was adapted from a previous study (Hallnan et al., 2020) and provided courtesy of Dr. Laurel Saito at The Nature Conservancy.
+## Running the model
+With all pre-staged data in place, running the model is relatively straightforward. The 'w2_con_SHA_90-24.xlsm' macro-enabled worksheet is the main driver 'script' for the W2 model. For the model to run, this worksheet must be setup to properly read-in the inputs and configure the model. There are a million and one gotchas in this process. The version here should run once the repository has been downloaded to your machine. Running the model is accomplished in 3 steps:
+1) Open the 'w2_con_SHA_90-24.xlsm' worksheet. When everything has been setup correctly (for the purposes of this example, everything is as it should be), click the big gray button near the top that say 'Export to CSV file'. This exports the model configuration to the 'w2_con.csv' file that the W2 model is expecting to begin its simulation.
+2) Before you run the actual W2 model, there is a convenient pre-processor 'preW2-v45_64.exe' that checks the configuration file for any errors. Double click on this file. It will run through a bunch of numbers and stuff. At the end, if it displays 'Normal Termination Criteria' and 0 Errors, you are good to go. It will show a bunch of warnings. These are related to the daily timestep of the input data being suboptimal (W2 produce higher fidelity results at sub-daily timesteps). Warnings will not prevent the model from running. You can view any Errors or Warnings in the pre.wrn and pre.err output files that show up in the base repository after the preprocessor is run.
+3) Game time. Run the model by double-clicking the 'w2_v45_64.exe' file. A box will come up showing a bunch of model parameters and values as the model runs. Watch it if you want. This model should run to completion in roughly 10 minutes. At run completion, close out the model.
+## Model output
+The W2 model outputs a number of files. I will just mention two outputs that are useful. The first is the timeseries output .csv files. These outputs are specified in lines 355-363 of the 'w2_con_SHA_90-24.xlsm' in terms of which segments and layers to output. As currently configured, these outputs are set for the segment closest to the dam (segment 21) at differing depths corresponding to the 4 output structures at Shasta Dam. The timeseries .csv files are output to the 'tsr_output' folder. These are discussed in more detail in the 'Detailed Notes' section below.  
 
-#### Plotting routines
+The second key output is the W2 postprocessor file with a .w2l suffix. This filename is specified in line 870 of the 'w2_con_SHA_90-24.xlsm' control file and is labeled 'Shasta.w2l' in this version.
+## W2 post-processor
+In the 'docs' folder of this repository, there is a step-by-step guide, 'W2 post-processor tool example.pdf', to run the W2 post-processor tool 'W2_Post3.exe' after the W2 model has been run. This provides a very gentle guide to viewing some of the more interesting outputs of the W2 model with this tool
+## Detailed notes
+_under construction - I will provide some further background info on the model setup and configuration and some Shasta specifics here; the instructions above are sufficient to familiarize with the model, run it, and produce some outputs for visualization_ 
 
-- main_plot.R: Main plotting script for manuscript figures
-- plot_supp-inf.R: Plotting script for supporting information figures
-- calc_ensemble_stats_top-10.R: Calculates cumulative ensemble statistics for top-10 inflow events
-- calc_ensemble_stats_top-100.R: Calculates cumulative ensemble statistics for top-10 inflow events
-- forecast_verification_functions.R: Helper functions for ensemble forecast verification and plotting
-- EFO-results_process.R: Process and plot EFO results for SI
-- EFO-results_process_pre-hc.R: Process and plot EFO pre-hindcast results
-- plot_cumul_ensembles_hopper.R: Processing and plotting functions for cumulative ensemble forecast plots
-- plot_ensembles_hopper.R: Processing and plotting function for ensemble forecast plots
-- plot_rank_hist.R: Processing and plotting function for rank histogram verification
-- plot_cumul_rank_hist.R: Processing and plotting function for cumulative rank histogram plot
-- plot_spread-skill_hopper.R: Processing and plotting function for binned spread error diagrams
-- plot_ecrps_hopper.R: Processing and plotting function for ensemble CRPS (eCRPS) verification plots
-- plot_top-10-events_hopper.R: Processing and plotting script for 'Top-10' cumulative ensemble statistics
-- plot-top-100-events_hopper.R: Processing and plotting script for 'Top-100' cumulative ensemble statistics
 
-#### Contact
+## Contact
 Zach Brodeur, zpb4@cornell.edu
